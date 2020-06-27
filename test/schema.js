@@ -8,7 +8,8 @@ const {
   GraphQLSchema,
   GraphQLID,
   GraphQLInt,
-  GraphQLList
+  GraphQLList,
+  GraphQLNonNull
 } = graphql
 
 const UserType = new GraphQLObjectType({
@@ -27,13 +28,15 @@ const RootQuery = new GraphQLObjectType({
       type: UserType,
       args: {id: {type: GraphQLID}},
       resolve(parent, args) {
-        console.log('test')
+        //return the user with the id used in the argument
+        return User.findById(args.id)
       }
     },
     users: {
       type: new GraphQLList(UserType),
       resolve(parent, args) {
-        return users
+        //return all users by passing in an empty object
+        return User.find({})
       }
     }
   }
@@ -47,8 +50,8 @@ const Mutation = new GraphQLObjectType({
       type: UserType,
       //arguments that we are expecting from the client when we receive the addUser request
       args: {
-        name: {type: GraphQLString},
-        description: {type: GraphQLString}
+        name: {type: new GraphQLNonNull(GraphQLString)},
+        description: {type: new GraphQLNonNull(GraphQLString)}
       },
       //resolve shows how our data is transformed
       resolve(parent, args) {
