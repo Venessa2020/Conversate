@@ -1,6 +1,6 @@
 const graphql = require('graphql')
 // Require in models
-const User = require('../server/models')
+const User = require('./models')
 
 const {
   GraphQLObjectType,

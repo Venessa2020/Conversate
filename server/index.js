@@ -4,19 +4,23 @@ const morgan = require('morgan')
 const compression = require('compression')
 const session = require('express-session')
 const passport = require('passport')
-const SequelizeStore = require('connect-session-sequelize')(session.Store)
-const db = require('./db')
-const sessionStore = new SequelizeStore({db})
-const PORT = process.env.PORT || 8080
-const app = express()
+//const SequelizeStore = require('connect-session-sequelize')(session.Store)
+//const db = require('./db')
+//const sessionStore = new SequelizeStore({db})
+const PORT = 8080
+const mongoose = require('mongoose')
 const socketio = require('socket.io')
+const graphqlHttp = require('express-graphql')
+const app = express()
+const schema = require('./db/models/schema')
+//const cors = require('cors')
 module.exports = app
 
 // This is a global Mocha hook, used for resource cleanup.
 // Otherwise, Mocha v4+ never quits after tests.
-if (process.env.NODE_ENV === 'test') {
-  after('close the session store', () => sessionStore.stopExpiringSessions())
-}
+// if (process.env.NODE_ENV === 'test') {
+//   after('close the session store', () => sessionStore.stopExpiringSessions())
+// }
 
 /**
  * In your development environment, you can keep all of your
@@ -29,16 +33,16 @@ if (process.env.NODE_ENV === 'test') {
 if (process.env.NODE_ENV !== 'production') require('../secrets')
 
 // passport registration
-passport.serializeUser((user, done) => done(null, user.id))
+// passport.serializeUser((user, done) => done(null, user.id))
 
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await db.models.user.findByPk(id)
-    done(null, user)
-  } catch (err) {
-    done(err)
-  }
-})
+// passport.deserializeUser(async (id, done) => {
+//   try {
+//     const user = await db.models.user.findByPk(id)
+//     done(null, user)
+//   } catch (err) {
+//     done(err)
+//   }
+// })
 
 const createApp = () => {
   // logging middleware
@@ -52,23 +56,37 @@ const createApp = () => {
   app.use(compression())
 
   // session middleware with passport
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET || 'my best friend is Cody',
-      store: sessionStore,
-      resave: false,
-      saveUninitialized: false
-    })
-  )
-  app.use(passport.initialize())
-  app.use(passport.session())
-
-  // auth and api routes
-  app.use('/auth', require('./auth'))
-  app.use('/api', require('./api'))
+  // app.use(
+  //   session({
+  //     secret: process.env.SESSION_SECRET || 'my best friend is Cody',
+  //     store: sessionStore,
+  //     resave: false,
+  //     saveUninitialized: false,
+  //   })
+  // )
+  // app.use(passport.initialize())
+  // app.use(passport.session())
 
   // static file-serving middleware
   app.use(express.static(path.join(__dirname, '..', 'public')))
+
+  //allows cross-origin requests btw graphql and react
+  //app.use(cors())
+
+  app.use('/graphql', graphqlHttp({schema, graphiql: true}))
+  //where do you find the schemas
+  //connect mongodb
+  mongoose
+    .connect(
+      'mongodb+srv://Venessa:w87ny781@cluster0-lkxcw.mongodb.net/Conversate?retryWrites=true&w=majority',
+      {useNewUrlParser: true, useUnifiedTopology: true}
+    )
+    .then(() => {
+      console.log('mongoose connected')
+    })
+    .catch(error => {
+      console.log(console.log(error))
+    })
 
   // any remaining requests with an extension (.js, .css, etc.) send 404
   app.use((req, res, next) => {
@@ -105,11 +123,11 @@ const startListening = () => {
   require('./socket')(io)
 }
 
-const syncDb = () => db.sync()
+//const syncDb = () => db.sync()
 
 async function bootApp() {
-  await sessionStore.sync()
-  await syncDb()
+  //await sessionStore.sync()
+  //await syncDb()
   await createApp()
   await startListening()
 }

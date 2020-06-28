@@ -1,15 +1,11 @@
-const mongoose = require('mongoose')
-const express = require('express')
+// const express = require('express')
 // graphtHttp exports a function that acts as middleware
 // it will take a request and funnel it through the graphHttp
 // parser and passes on to the resolver
-const graphqlHttp = require('express-graphql')
-const app = express()
-const schema = require('./schema')
 
-// body parsing middleware
-app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+// // body parsing middleware
+// app.use(express.json())
+// app.use(express.urlencoded({extended: true}))
 
 // buildSchema takes a graphQl schema written as a javasript template literal
 // an converted to javascript object
@@ -19,24 +15,9 @@ app.use(express.urlencoded({extended: true}))
 // a sting type should be returned
 
 //const users = []
-app.get('/', (req, res, next) => {
-  res.send('Hiya world!')
-})
-app.use('/graphql', graphqlHttp({schema, graphiql: true}))
-//where do you find the schemas
-//connect mongodb
-mongoose
-  .connect(
-    'mongodb+srv://Venessa:w87ny781@cluster0-lkxcw.mongodb.net/Conversate?retryWrites=true&w=majority',
-    {useNewUrlParser: true, useUnifiedTopology: true}
-  )
-  .then(() => {
-    app.listen(3000)
-    console.log('Listening on port 3000')
-  })
-  .catch(error => {
-    console.log(console.log(error))
-  })
+// app.get('/', (req, res, next) => {
+//   res.send('Hiya world!')
+// })
 
 //.once is an event listner which tells the connection is to
 //listen once
