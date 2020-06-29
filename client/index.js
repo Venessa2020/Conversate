@@ -2,7 +2,9 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import ApolloClient from 'apollo-boost'
 import {ApolloProvider} from 'react-apollo'
-import PracticeTest from './components/practiceTest'
+import AddUser from './components/addUser'
+import Quiz from './components/quiz'
+import Users from './components/users'
 
 const client = new ApolloClient({
   // the end point that handles all of our http queries
@@ -11,7 +13,9 @@ const client = new ApolloClient({
 
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <PracticeTest />
+    <Users />
+    <AddUser />
+    <Quiz />
   </ApolloProvider>,
   document.getElementById('app')
 )

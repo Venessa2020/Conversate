@@ -1,17 +1,8 @@
 import React from 'react'
-import {gql} from 'apollo-boost'
 //used to bind a query to a component
 import {graphql} from 'react-apollo'
+import {getUsersQuery} from '../store/queries'
 
-const getUsersQuery = gql`
-  {
-    users {
-      id
-      name
-      description
-    }
-  }
-`
 class Users extends React.Component {
   render() {
     console.log(this.props, 'The props')
