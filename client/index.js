@@ -1,19 +1,21 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {Provider} from 'react-redux'
-import {Router} from 'react-router-dom'
-import history from './history'
-import store from './store'
-import App from './app'
+import ApolloClient from 'apollo-boost'
+import {ApolloProvider} from 'react-apollo'
+import AddUser from './components/addUser'
+import Quiz from './components/quiz'
+import Users from './components/users'
 
-// establishes socket connection
-import './socket'
+const client = new ApolloClient({
+  // the end point that handles all of our http queries
+  uri: 'http://localhost:8080/graphql'
+})
 
 ReactDOM.render(
-  <Provider store={store}>
-    <Router history={history}>
-      <App />
-    </Router>
-  </Provider>,
+  <ApolloProvider client={client}>
+    <Users />
+    <AddUser />
+    <Quiz />
+  </ApolloProvider>,
   document.getElementById('app')
 )
